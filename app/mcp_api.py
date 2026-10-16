@@ -35,3 +35,5 @@ def stripe_verify(sid: str) -> tuple:
     with U.urlopen(U.Request(f'https://api.stripe.com/v1/checkout/sessions/{P.quote(sid)}', headers={'Authorization':f'Basic {au}'}), timeout=8) as r:
       s = json.loads(r.read().decode()); return (200, {'ok':True,'api_key':mint_pass(30, s.get('created'))}) if s.get('payment_status')=='paid' else (402, {'error':'Unpaid'})
   except Exception as e: return 400, {'error':str(e)}
+
+TOOLS.append(_t("assay_verify_delivery","Verify post-payment A2A/x402 delivery and mint signed SLA receipt.",["target","tx_hash","status_code"],*([["target"]] if _t.__code__.co_argcount>3 else [])))

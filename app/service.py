@@ -32,3 +32,10 @@ def crawl_seeds(store, limit=6) -> dict:
   with ThreadPoolExecutor(max_workers=6) as x: out = [r for r in x.map(_sp, urls[:int(limit)]) if r]
   store.sync()
   return {"discovered": len(urls), "probed": len(out), "results": out}
+
+def verify_delivery(S, b: dict) -> dict:
+  from app.core import sign_data
+  d, st, tx = probe_target(S, b.get("target","")), int(b.get("status_code") or 200), (b.get("tx_hash") or "").strip()
+  br = st>=500 or d["grade"]=="F" or d["rug_pulls"]>0 or bool(d["poison_flags"])
+  p = {"target":d["target"],"tx_hash":tx,"reported_status":st,"grade":d["grade"],"score":d["score"],"sla_breach":br}
+  return {**p,"verdict":"sla_breach_confirmed" if br else "delivery_verified","sla_receipt":sign_data(p,"asr_sla_")}

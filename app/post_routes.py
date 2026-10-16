@@ -5,7 +5,7 @@ _CW = [0]
 import json
 from app.engine import probe_target
 from app.mcp_api import TOOLS, stripe_checkout
-from app.service import crawl_seeds, preflight
+from app.service import crawl_seeds, preflight, verify_delivery
 
 def handle_post(S, p: str, b: dict, k: str, ip: str) -> tuple:
   if p == "/v1/billing/stripe-checkout": return stripe_checkout(b.get("amount_usd", 19.0))
@@ -22,14 +22,14 @@ def handle_post(S, p: str, b: dict, k: str, ip: str) -> tuple:
       if not ok: return 402, au
       a = pr.get("arguments") or {}
       try:
-        res = preflight(S, a) if pr.get("name")=="assay_preflight" else probe_target(S, a.get("target",""))
+        res = preflight(S, a) if pr.get("name")=="assay_preflight" else verify_delivery(S, a) if pr.get("name")=="assay_verify_delivery" else probe_target(S, a.get("target",""))
         return 200, {"jsonrpc":"2.0","id":i,"result":{"content":[{"type":"text","text":json.dumps(res)}],"isError":False}}
       except Exception as e:
         return 200, {"jsonrpc":"2.0","id":i,"result":{"content":[{"type":"text","text":str(e)}],"isError":True}}
     return 200, {"jsonrpc":"2.0","id":i,"result":{"resources":[],"prompts":[],"events":[]}}
-  if p in ("/v1/preflight", "/v1/probe"):
+  if p in ("/v1/preflight", "/v1/probe", "/v1/dispute"):
     ok, au = S.auth(k, ip)
     if not ok: return 402, au
-    try: return 200, (preflight(S, b) if p=="/v1/preflight" else probe_target(S, b.get("target","")))
+    try: return 200, (preflight(S, b) if p=="/v1/preflight" else verify_delivery(S, b) if p=="/v1/dispute" else probe_target(S, b.get("target","")))
     except ValueError as e: return 400, {"error":str(e)}
   return 404, {"error":"not found"}
