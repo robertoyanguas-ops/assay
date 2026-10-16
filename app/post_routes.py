@@ -15,7 +15,7 @@ def handle_post(S, p: str, b: dict, k: str, ip: str) -> tuple:
     _CW[0] = time.time(); return 200, crawl_seeds(S, min(int(b.get("limit", 16)), 45))
   if p == "/mcp":
     m, i, pr = b.get("method"), b.get("id"), b.get("params") or {}
-    if m == "initialize": return 200, {"jsonrpc":"2.0","id":i,"result":{"protocolVersion":"2024-11-05","capabilities":{"tools":{}},"serverInfo":{"name":"assay","version":"0.1.0"}}}
+    if m == "initialize": return 200, {"jsonrpc":"2.0","id":i,"result":{"protocolVersion":"2024-11-05","capabilities":{"tools":{}},"serverInfo":{"name":"assay","version":"0.4.2"}}}
     if m == "tools/list": return 200, {"jsonrpc":"2.0","id":i,"result":{"tools":TOOLS}}
     if m == "tools/call":
       ok, au = S.auth(k, ip)
@@ -26,7 +26,7 @@ def handle_post(S, p: str, b: dict, k: str, ip: str) -> tuple:
         return 200, {"jsonrpc":"2.0","id":i,"result":{"content":[{"type":"text","text":json.dumps(res)}],"isError":False}}
       except Exception as e:
         return 200, {"jsonrpc":"2.0","id":i,"result":{"content":[{"type":"text","text":str(e)}],"isError":True}}
-    return 200, {"jsonrpc":"2.0","id":i,"result":{}}
+    return 200, {"jsonrpc":"2.0","id":i,"result":{"resources":[],"prompts":[],"events":[]}}
   if p in ("/v1/preflight", "/v1/probe"):
     ok, au = S.auth(k, ip)
     if not ok: return 402, au

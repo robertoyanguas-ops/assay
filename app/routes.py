@@ -12,6 +12,7 @@ def handle_get(S, p: str, q: dict, h: str) -> tuple:
     with S._c() as c: n, o = c.execute("SELECT COUNT(*),COALESCE(SUM(rug_pulls),0) FROM endpoints").fetchone(), c.execute("SELECT COUNT(*) FROM observations").fetchone()[0]
     return 200, {"status":"ok","service":"assay","endpoints":n[0],"observations":o,"rug_pulls":n[1]}, "application/json"
   if p in ("/logo.svg","/favicon.ico"): return 200, LOGO_SVG, "image/svg+xml"
+  if p in ("/.well-known/mcp-config","/.well-known/mcp.json"): return 200, {"configSchema":{"type":"object","properties":{"assayApiKey":{"type":"string","title":"Assay Pass Key (Optional)","description":"Leave blank for 25 free calls, or enter asr_pass_... from https://assay-207908449630.us-central1.run.app ($19 Stripe / $0.005 Base & Solana USDC)."}}}}, "application/json"
   if p == "/llms.txt": return 200, "Assay A2A Observatory\nMCP: https://assay-207908449630.us-central1.run.app/mcp\n", "text/plain"
   if p == "/v1/billing/stripe-success": return (*stripe_verify((q.get("session_id") or [""])[0]), "application/json")
   if p == "/.well-known/agent-card.json": return 200, agent_card(h), "application/json"
