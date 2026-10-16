@@ -1,0 +1,12 @@
+name: "Assay MCP & A2A Rug-Pull Guard"
+description: "Verify MCP/A2A endpoints and pin SHA-256 tool schema hashes (mcp-lock.json) in CI"
+inputs:
+  config: {default: "server.json"}
+  mode: {default: "verify"}
+  api_key: {required: false}
+runs:
+  using: "composite"
+  steps:
+    - shell: bash
+      env: {ASSAY_API_KEY: "${{ inputs.api_key }}"}
+      run: python3 "${{ github.action_path }}/assay_cli.py" "${{ inputs.mode }}" "${{ inputs.config }}"
