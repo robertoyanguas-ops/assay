@@ -10,7 +10,10 @@ S = AssayStore()
 class H(BaseHTTPRequestHandler):
   def log_message(self, *a): pass
   def _ip(self): return (self.headers.get("X-Forwarded-For") or "").split(",")[-1].strip() or self.client_address[0]
-  def _k(self, b): return (self.headers.get("X-Assay-Key") or self.headers.get("X-Agent-Id") or (b.get("api_key") if isinstance(b,dict) else "") or "").strip()
+  def _k(self, b):
+    q, a = parse_qs(urlparse(self.path).query), (((b.get("params") or {}).get("arguments") or {}) if isinstance(b,dict) else {})
+    h = self.headers.get
+    return (h("X-Assay-Key") or h("X-Payment-Proof") or (h("Authorization") or "").replace("Bearer ","") or (q.get("assayApiKey") or q.get("api_key") or [""])[0] or (b.get("api_key") if isinstance(b,dict) else "") or a.get("api_key") or h("X-Agent-Id") or "").strip()
   def _j(self, c, d, ct="application/json"):
     raw = d.encode() if isinstance(d, str) else json.dumps(d).encode()
     self.send_response(c); self.send_header("Content-Type", ct); self.send_header("Access-Control-Allow-Origin", "*"); self.end_headers(); self.wfile.write(raw)

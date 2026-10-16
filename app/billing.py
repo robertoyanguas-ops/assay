@@ -15,10 +15,11 @@ def claim_x402(S, tx: str) -> tuple:
   try:
     if tx.startswith("0x") and len(tx)==66:
       r = _rpc("https://mainnet.base.org", "eth_getTransactionReceipt", [tx])
-      ok = r.get("status")=="0x1" and "ec5275d5b03bc390fca63d902d0b2d0db2eb5573" in json.dumps(r).lower()
+      ok = r.get("status")=="0x1" and any(l.get("address","").lower()=="0x833589fcd6edb6e08f4c7c32d4f71b54bda02913" and len(l.get("topics") or [])>=3 and l["topics"][2].lower().endswith("ec5275d5b03bc390fca63d902d0b2d0db2eb5573") and int(l.get("data") or "0x0",16)>=5000 for l in (r.get("logs") or []))
     else:
       r = _rpc("https://api.mainnet-beta.solana.com", "getTransaction", [tx, {"encoding":"jsonParsed","maxSupportedTransactionVersion":0}])
-      ok = bool(r) and r.get("meta",{}).get("err") is None and "Dq7fuKy4tGsKeQcDh4oVFjTTkbmfQpS1LTrnFxqd339L" in json.dumps(r)
+      m = r.get("meta") or {}; sb = lambda a: sum(int((x.get("uiTokenAmount") or {}).get("amount") or 0) for x in (a or []) if x.get("owner")=="Dq7fuKy4tGsKeQcDh4oVFjTTkbmfQpS1LTrnFxqd339L" and x.get("mint")=="EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v")
+      ok = bool(r) and m.get("err") is None and (sb(m.get("postTokenBalances"))-sb(m.get("preTokenBalances")))>=5000
   except Exception as e: return 502, {"error":str(e)}
   if not ok: return 402, {"error":"Unverified payment"}
   with S.lock, S._c() as c: c.execute("INSERT INTO wallets VALUES(?,1)", (f"tx_{tx}",))
