@@ -1,0 +1,12 @@
+{
+  "schema": "assay-mcp-lock/v1",
+  "pins": {
+    "https://assay-207908449630.us-central1.run.app/mcp": {
+      "grade": "A+",
+      "score": 100,
+      "tools": 2,
+      "tools_hash": "sha256:8f4894a31d22565000b128f7d8b4ef95467cb52e14004db85ea663e66eeeb780",
+      "receipt": "asr_rcpt_784125b3466040fcdfa715d61cb41519"
+    }
+  }
+}
