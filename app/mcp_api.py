@@ -37,3 +37,5 @@ def stripe_verify(sid: str) -> tuple:
   except Exception as e: return 400, {'error':str(e)}
 
 TOOLS.append(_t("assay_verify_delivery","Verify post-payment A2A/x402 delivery and mint signed SLA receipt.",["target","tx_hash","status_code"],*([["target"]] if _t.__code__.co_argcount>3 else [])))
+
+from app.tdqs import TOOLS

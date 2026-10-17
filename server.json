@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.robertoyanguas-ops/assay",
   "description": "A2A & MCP Pre-Flight Security: SHA-256 tool schema rug-pull detection and liveness grades.",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "remotes": [
     {
       "type": "streamable-http",

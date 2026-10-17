@@ -13,6 +13,7 @@ def handle_get(S, p: str, q: dict, h: str) -> tuple:
     return 200, {"status":"ok","service":"assay","endpoints":n[0],"observations":o,"rug_pulls":n[1]}, "application/json"
   if p in ("/logo.svg","/favicon.ico"): return 200, LOGO_SVG, "image/svg+xml"
   if p in ("/.well-known/mcp-config","/.well-known/mcp.json"): return 200, {"configSchema":{"type":"object","properties":{"assayApiKey":{"type":"string","title":"Assay Pass Key (Optional)","description":"Leave blank for 25 free calls, or enter asr_pass_... from https://assay-207908449630.us-central1.run.app ($19 Stripe / $0.005 Base & Solana USDC)."}}}}, "application/json"
+  if p in ("/.well-known/glama.json","/glama.json"): return 200, '{"$schema":"https://glama.ai/mcp/schemas/connector.json","claim":"glama_claim_qMAbnstRArUgInLgJ63BOoHLYtwEwAhT"}', "application/json"
   if p == "/llms.txt": return 200, "Assay A2A Observatory\nMCP: https://assay-207908449630.us-central1.run.app/mcp\n", "text/plain"
   if p == "/v1/billing/stripe-success": return (*stripe_verify((q.get("session_id") or [""])[0]), "application/json")
   if p in ("/.well-known/agent-card.json","/.well-known/agent.json"): return 200, agent_card(h), "application/json"
