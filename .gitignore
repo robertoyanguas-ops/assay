@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+*.db
+/app/
+/Dockerfile
+/data/
+/tests/
+/scripts/
+*.sh
+.env*
+
+/app/
+/Dockerfile
